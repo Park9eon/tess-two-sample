@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">tess-two-sample</string>
+    <string-array name="langs">
+        <item>kor</item>
+        <item>eng</item>
+    </string-array>
+</resources>
