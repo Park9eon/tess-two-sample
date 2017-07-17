@@ -1,4 +1,4 @@
-ㅣㄷ읻ㅈpackage com.example.tess_two_sample;
+package com.park9eon.tesssample;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
