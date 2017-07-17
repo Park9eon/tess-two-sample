@@ -1,12 +1,14 @@
 package com.park9eon.tesssample;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -14,10 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -38,8 +37,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		this.baseAPI = new TessBaseAPI();
 		this.baseAPI.setDebug(true);
 
+		copyFiles();
+
 		setLang(0);
 		baseAPI.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT);
+	}
+
+	// Stackoverflow에서 퍼옴
+	private void copyFiles() {
+		AssetManager assetManager = getAssets();
+		String[] files = {"eng.traineddata", "kor.traineddata"};
+		File dataDir = new File(getTraineddataDir() + "/tessdata");
+		if (files != null) for (String filename : files) {
+			InputStream in = null;
+			OutputStream out = null;
+			try {
+				in = assetManager.open(filename);
+				File outFile = new File(dataDir, filename);
+				out = new FileOutputStream(outFile);
+				copyFile(in, out);
+			} catch(IOException e) {
+				Log.e("tag", "Failed to copy asset file: " + filename, e);
+			}
+			finally {
+				if (in != null) {
+					try {
+						in.close();
+					} catch (IOException e) {
+						// NOOP
+					}
+				}
+				if (out != null) {
+					try {
+						out.close();
+					} catch (IOException e) {
+						// NOOP
+					}
+				}
+			}
+		}
+	}
+	private void copyFile(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int read;
+		while((read = in.read(buffer)) != -1){
+			out.write(buffer, 0, read);
+		}
 	}
 
 	@Override
